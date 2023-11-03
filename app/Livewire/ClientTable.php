@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Client;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
 use PowerComponents\LivewirePowerGrid\Exportable;
@@ -19,6 +20,7 @@ use PowerComponents\LivewirePowerGrid\Traits\WithExport;
 final class ClientTable extends PowerGridComponent
 {
     use WithExport;
+    use LivewireAlert;
 
     public function setUp(): array
     {
@@ -103,6 +105,30 @@ final class ClientTable extends PowerGridComponent
         $this->js('alert('.$rowId.')');
     }
 
+    #[\Livewire\Attributes\On('delete')]
+    public function destroy($rowId)
+    {
+        $this->alert('question', 'Apa kamu yakin ingin menghapus data client?', [
+            'showConfirmButton' => true,
+            'confirmButtonText' => 'Ya',
+            'onConfirmed' => 'confirmed',
+            'showDenyButton' => true,
+            'denyButtonText' => 'Tidak',
+        ]);
+    }
+
+    public function getListeners(){
+        return [
+            'confirmed',
+            'denied'
+        ];
+    }
+
+    public function confirmed($data) {
+        // $this->alert('success', $data);
+        dd($data);
+    }
+
     public function actions(\App\Models\Client $row): array
     {
         return [
@@ -110,7 +136,12 @@ final class ClientTable extends PowerGridComponent
                 ->slot('Edit: '.$row->id)
                 ->id()
                 ->class('pg-btn-white dark:ring-pg-primary-600 dark:border-pg-primary-600 dark:hover:bg-pg-primary-700 dark:ring-offset-pg-primary-800 dark:text-pg-primary-300 dark:bg-pg-primary-700')
-                ->dispatch('edit', ['rowId' => $row->id])
+                ->dispatch('edit', ['rowId' => $row->id]),
+            Button::add('delete')
+                ->slot('Delete')
+                ->id()
+                ->class('btn btn-danger')
+                ->dispatch('delete', ['rowId' => $row->id])
         ];
     }
 

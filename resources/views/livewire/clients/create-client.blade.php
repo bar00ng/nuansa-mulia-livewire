@@ -55,7 +55,10 @@
                         <button class="btn btn-primary" type="submit">
                             Submit
                             <span class="spinner-border spinner-border-sm" aria-hidden="true" wire:loading></span>
-                          </button>
+                        </button>
+                        <a href="{{ route('client.index') }}" role="button" class="btn btn-danger" wire:navigate>
+                            Back
+                        </a>
                     </form>
                 </div>
             </div>

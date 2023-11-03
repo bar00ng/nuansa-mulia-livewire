@@ -29,3 +29,5 @@ Route::prefix('client')
         Route::get('/create', CreateClient::class)
             ->name('create');
     });
+
+    Route::get('logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);

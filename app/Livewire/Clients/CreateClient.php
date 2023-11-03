@@ -7,11 +7,14 @@ use App\Models\Client;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 
 class CreateClient extends Component
 {
     public ClientForm $form;
+
+    use LivewireAlert;
 
     public function storeData()
     {
@@ -23,8 +26,7 @@ class CreateClient extends Component
             DB::commit();
             $this->form->reset();
 
-            session()->flash('status', 'Post successfully updated.');
-            $this->redirect('/client', true);
+            $this->alert('success', 'Data client berhasil ditambahkan!', [], route('client.index'));
         } catch (\Throwable $th) {
             Log::error($th);
             DB::rollBack();
