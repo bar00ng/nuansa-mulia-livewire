@@ -1,29 +1,29 @@
 <?php
 
-namespace App\Livewire\Clients;
+namespace App\Livewire\Vendors;
 
-use App\Models\Client;
-use Illuminate\Database\QueryException;
+use App\Models\Vendor;
+use Doctrine\DBAL\Query\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-#[Title('List Client')]
+#[Title('List Vendor')]
 
-class ListClient extends Component
+class ListVendor extends Component
 {
     public function render()
     {
-        return view('livewire.clients.list-client');
+        return view('livewire.vendors.list-vendor');
     }
 
-    public function destroy($clientId)
+    public function destroy($vendorId)
     {
         try {
             DB::beginTransaction();
 
-            Client::find($clientId)
+            Vendor::find($vendorId)
                 ->delete();
 
             DB::commit();

@@ -5,30 +5,25 @@
         </a>
 
         <ul class="sidebar-nav">
-            <li class="sidebar-item active">
-                <a class="sidebar-link" href="index.html">
-                    <i class="align-middle" data-feather="sliders"></i> <span
-                        class="align-middle">Dashboard</span>
-                </a>
-            </li>
+            <x-partials.nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                <i class="align-middle" data-feather="sliders"></i>
+                <span class="align-middle">Dashboard</span>
+            </x-partials.nav-link>
 
-            <li class="sidebar-item">
-                <a class="sidebar-link" href="pages-profile.html">
-                    <i class="align-middle" data-feather="user"></i> <span class="align-middle">Projects</span>
-                </a>
-            </li>
+            <x-partials.nav-link :href="route('project.index')" :active="request()->routeIs('project.*')">
+                <i class="align-middle" data-feather="sliders"></i>
+                <span class="align-middle">Projects</span>
+            </x-partials.nav-link>
 
-            <li class="sidebar-item">
-                <a class="sidebar-link" href="pages-sign-in.html">
-                    <i class="align-middle" data-feather="log-in"></i> <span class="align-middle">Vendors</span>
-                </a>
-            </li>
+            <x-partials.nav-link :href="route('vendor.index')" :active="request()->routeIs('vendor.*')">
+                <i class="align-middle" data-feather="sliders"></i>
+                <span class="align-middle">Vendors</span>
+            </x-partials.nav-link>
 
-            <li class="sidebar-item">
-                <a class="sidebar-link" href="{{ route('client.index')}}" wire:navigate>
-                    <i class="align-middle" data-feather="user-plus"></i> <span class="align-middle">Clients</span>
-                </a>
-            </li>
+            <x-partials.nav-link :href="route('client.index')" :active="request()->routeIs('client.*')">
+                <i class="align-middle" data-feather="sliders"></i>
+                <span class="align-middle">Clients</span>
+            </x-partials.nav-link>
         </ul>
     </div>
 </nav>

@@ -12,7 +12,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        \App\Models\Vendor::create([
+            'nama_vendor' => 'BUDI'
+        ]);
+
+        \App\Models\Vendor::create([
+            'nama_vendor' => 'SIS'
+        ]);
+
+        \App\Models\Client::create([
+            'kd_client' => 'RNBW',
+            'nama_client' => 'Rainbow',
+            'alamat_client' => 'Depok',
+            'nomor_telepon_client' => '123',
+        ]);
 
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',

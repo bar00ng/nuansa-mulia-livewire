@@ -1,25 +1,22 @@
 <?php
 
-namespace App\Livewire\Clients;
+namespace App\Livewire\Vendors;
 
-use App\Livewire\Forms\ClientForm;
+use App\Livewire\Forms\VendorForm;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Attributes\Title;
+use RealRashid\SweetAlert\Facades\Alert;
 use Livewire\Component;
 
-#[Title('Tambah Client')]
+#[Title('Tambah Vendor')]
 
-class CreateClient extends Component
+class CreateVendor extends Component
 {
-    public ClientForm $form;
+    public VendorForm $form;
 
-    use LivewireAlert;
-
-    public function storeData()
-    {
+    public function storeData() {
         $this->validate();
         try {
             DB::beginTransaction();
@@ -28,22 +25,22 @@ class CreateClient extends Component
             DB::commit();
             $this->form->reset();
 
-            flash('Berhasil menambahkan client.', 'success');
+            flash('Berhasil menambahkan vendor.', 'success');
         } catch (\Throwable $th) {
             Log::error($th);
             DB::rollBack();
 
-            flash('Terjadi kesalahan saat menambahkan client.', 'danger');
+            flash('Terjadi kesalahan saat menambahkan vendor.', 'danger');
         } catch (QueryException $ex) {
             Log::error($ex);
             DB::rollBack();
 
-            flash('Terjadi kesalahan saat menambahkan client.', 'danger');
+            flash('Terjadi kesalahan saat menambahkan vendor.', 'danger');
         }
     }
 
     public function render()
     {
-        return view('livewire.clients.create-client');
+        return view('livewire.vendors.create-vendor');
     }
 }

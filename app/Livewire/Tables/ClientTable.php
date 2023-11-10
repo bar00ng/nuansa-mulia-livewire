@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Tables;
 
 use App\Models\Client;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
 use PowerComponents\LivewirePowerGrid\Exportable;
@@ -20,7 +22,6 @@ use PowerComponents\LivewirePowerGrid\Traits\WithExport;
 final class ClientTable extends PowerGridComponent
 {
     use WithExport;
-    use LivewireAlert;
 
     public function setUp(): array
     {
@@ -66,7 +67,7 @@ final class ClientTable extends PowerGridComponent
     {
         return [
             Column::make('Id', 'id'),
-            Column::make('Kd client', 'kd_client')
+            Column::make('Kode client', 'kd_client')
                 ->sortable()
                 ->searchable(),
 
@@ -99,44 +100,38 @@ final class ClientTable extends PowerGridComponent
         ];
     }
 
-    #[\Livewire\Attributes\On('edit')]
+    #[\Livewire\Attributes\On('delete')]
     public function edit($rowId): void
     {
-        $this->js('alert('.$rowId.')');
-    }
+        try {
+            DB::beginTransaction();
 
-    #[\Livewire\Attributes\On('delete')]
-    public function destroy($rowId)
-    {
-        $this->alert('question', 'Apa kamu yakin ingin menghapus data client?', [
-            'showConfirmButton' => true,
-            'confirmButtonText' => 'Ya',
-            'onConfirmed' => 'confirmed',
-            'showDenyButton' => true,
-            'denyButtonText' => 'Tidak',
-        ]);
-    }
+            \App\Models\Client::find($rowId)
+                ->delete();
+            DB::commit();
 
-    public function getListeners(){
-        return [
-            'confirmed',
-            'denied'
-        ];
-    }
+            flash('Berhasil menghapus client.', 'success');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error($th);
 
-    public function confirmed($data) {
-        // $this->alert('success', $data);
-        dd($data);
+            flash('Terjadi kesalahan saat menghapus data.', 'danger');
+        }
     }
 
     public function actions(\App\Models\Client $row): array
     {
         return [
-            Button::add('edit')
-                ->slot('Edit: '.$row->id)
-                ->id()
-                ->class('pg-btn-white dark:ring-pg-primary-600 dark:border-pg-primary-600 dark:hover:bg-pg-primary-700 dark:ring-offset-pg-primary-800 dark:text-pg-primary-300 dark:bg-pg-primary-700')
-                ->dispatch('edit', ['rowId' => $row->id]),
+            Button::add('edit')->render(function (\App\Models\Client $client) {
+                return Blade::render(
+                    <<<HTML
+                     <a href="{{ route('client.edit', '$client->uuid') }}" class="btn btn-warning" wire:navigate>
+                        <i class="bi bi-pencil-square"></i>
+                     </a>
+                    HTML
+                    ,
+                );
+            }),
             Button::add('delete')
                 ->slot('Delete')
                 ->id()

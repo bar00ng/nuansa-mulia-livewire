@@ -1,33 +1,43 @@
 <?php
 
-use App\Livewire\Clients\{
-    ListClient,
-    CreateClient
-};
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
-Route::get('/', function () {
-    return view('app');
-});
+Route::get('/', \App\Livewire\Index::class)
+    ->name('dashboard');
 
 Route::prefix('client')
     ->name('client.')
-    ->group(function () {
-        Route::get('/', ListClient::class)
+    ->group(function() {
+        Route::get('/', \App\Livewire\Clients\ListClient::class)
             ->name('index');
-        Route::get('/create', CreateClient::class)
+        Route::get('/create', \App\Livewire\Clients\CreateClient::class)
             ->name('create');
+        Route::get('/edit/{client:uuid}', \App\Livewire\Clients\UpdateClient::class)
+            ->name('edit');
     });
 
-    Route::get('logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);
+Route::prefix('vendors')
+    ->name('vendor.')
+    ->group(function() {
+        Route::get('/', \App\Livewire\Vendors\ListVendor::class)
+            ->name('index');
+        Route::get('/create', \App\Livewire\Vendors\CreateVendor::class)
+            ->name('create');
+        Route::get('/edit/{vendor:uuid}', \App\Livewire\Vendors\UpdateVendor::class)
+            ->name('edit');
+    });
+
+Route::prefix('project')
+    ->name('project.')
+    ->group(function() {
+        Route::get('/', \App\Livewire\Project\ListProject::class)
+            ->name('index');
+        Route::get('/create', \App\Livewire\Project\CreateProject::class)
+            ->name('create');
+        Route::get('/{project:uuid}', \App\Livewire\Project\ShowProject::class)
+            ->name('show');
+        Route::get('/{job_detail:uuid}/rab', \App\Livewire\Rab\CreateRab::class)
+            ->name('rab');
+    });
+
+Route::get('logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);

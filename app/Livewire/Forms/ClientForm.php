@@ -23,4 +23,9 @@ class ClientForm extends Form
     public function store() {
         Client::create($this->all());
     }
+
+    public function update($id) {
+        Client::findOrFail($id)
+            ->update($this->all());
+    }
 }

@@ -7,21 +7,23 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Ramsey\Uuid\Uuid;
 
-class Client extends Model
+class JobDetail extends Model
 {
     use HasFactory;
 
     use HasUuids;
 
-    protected $fillable = [
-        'kd_client',
-        'nama_client',
-        'alamat_client',
-        'nomor_telepon_client'
-    ];
+    protected $fillable = ['nama_job', 'ukuran_job', 'keterangan_job', 'harga_penawaran_job', 'project_id'];
 
-    public function projects() {
-        return $this->hasMany(Project::class);
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    public function vendors()
+    {
+        return $this->belongsToMany(Vendor::class)
+            ->withPivot(['rab_item_id']);
     }
 
     public function newUniqueId(): string
