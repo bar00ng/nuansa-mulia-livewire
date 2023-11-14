@@ -38,6 +38,7 @@
     </div>
 
     <script src="/assets/js/app.js" ></script>
+    @include('sweetalert::alert')
     @livewireScripts
     @stack('scripts')
 </body>

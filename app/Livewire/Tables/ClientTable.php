@@ -97,24 +97,27 @@ final class ClientTable extends PowerGridComponent
         ];
     }
 
-    #[\Livewire\Attributes\On('delete')]
-    public function edit($rowId): void
-    {
-        try {
-            DB::beginTransaction();
+    // #[\Livewire\Attributes\On('delete')]
+    // public function edit($rowId): void
+    // {
+    //     try {
+    //         DB::beginTransaction();
 
-            \App\Models\Client::find($rowId)
-                ->delete();
-            DB::commit();
+    //         \App\Models\Client::find($rowId)
+    //             ->delete();
+    //         DB::commit();
 
-            $this->dispatch('client-deleted', message:'success')->to(ListClient::class);
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            Log::error($th);
+    //         $this->dispatch('client-deleted', message:'success')->to(ListClient::class);
+    //     } catch (\Throwable $th) {
+    //         DB::rollBack();
+    //         Log::error($th);
 
-            $this->dispatch('client-deleted', message:'danger')->to(ListClient::class);
-        }
-    }
+    //         $this->dispatch('client-deleted', message:'danger')->to(ListClient::class);
+    //     }
+    // }
+
+    #[On('client-deleted')]
+    public function clientDeleted($clientId) {}
 
     public function actions(\App\Models\Client $row): array
     {
@@ -133,7 +136,7 @@ final class ClientTable extends PowerGridComponent
                 ->slot('Delete')
                 ->id()
                 ->class('btn btn-danger')
-                ->dispatch('delete', ['rowId' => $row->id])
+                ->dispatchTo('clients.list-client', 'trigger-delete-client', ['client' => $row])
         ];
     }
 
