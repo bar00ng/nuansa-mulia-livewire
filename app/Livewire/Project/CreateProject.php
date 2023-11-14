@@ -2,8 +2,10 @@
 
 namespace App\Livewire\Project;
 
+use App\Livewire\Forms\JobDetailForm;
 use App\Livewire\Forms\ProjectForm;
 use App\Models\Client;
+use App\Models\JobDetail;
 use App\Models\Project;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +18,9 @@ use Livewire\Component;
 
 class CreateProject extends Component
 {
-    public ProjectForm $form;
+    public ProjectForm $projectForm;
+
+    public JobDetailForm $jobDetailForm;
 
     public $clients;
 
@@ -30,7 +34,7 @@ class CreateProject extends Component
     }
 
     public function mount() {
-        $this->form->job_details[] = [
+        $this->jobDetailForm->job_details[] = [
             'item' => '',
             'ukuran' => '',
             'keterangan' => '',
@@ -39,13 +43,13 @@ class CreateProject extends Component
     }
 
     public function removeRow($index) {
-        unset($this->form->job_details[$index]);
-        $this->form->job_details = array_values($this->form->job_details);
+        unset($this->jobDetailForm->job_details[$index]);
+        $this->jobDetailForm->job_details = array_values($this->jobDetailForm->job_details);
     }
 
     public function addRow()
     {
-        $this->form->job_details[] = [
+        $this->jobDetailForm->job_details[] = [
             'item' => '',
             'ukuran' => '',
             'keterangan' => '',
@@ -55,13 +59,13 @@ class CreateProject extends Component
 
     public function generateKodeProject()
     {
-        $client = Client::find($this->form->client_id);
+        $client = Client::find($this->projectForm->client_id);
         $countProject = $client->projects->count() + 1;
         $countProjectFormatted = str_pad($countProject, 3, '0', STR_PAD_LEFT);
 
         $kodeProject = "$client->kd_client-$countProjectFormatted";
 
-        $this->form->kd_project = $kodeProject;
+        $this->projectForm->kd_project = $kodeProject;
     }
 
     public function onSave()
@@ -70,10 +74,13 @@ class CreateProject extends Component
         try {
             DB::beginTransaction();
 
-            $this->form->save();
+            $project = $this->projectForm->save();
+            $this->jobDetailForm->save($project);
             DB::commit();
-            $this->form->reset();
+            $this->projectForm->reset();
+            $this->jobDetailForm->reset();
 
+            $this->dispatch('job-detail-updated');
             flash('Berhasil menambahkan project.', 'success');
         } catch (\Throwable $th) {
             Log::error($th);

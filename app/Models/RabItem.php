@@ -13,6 +13,26 @@ class RabItem extends Model
 
     use HasUuids;
 
+    protected $fillable = [
+        'subtotal_material',
+        'subtotal_ongkos_kerja',
+        'total_biaya',
+        'lain_lain',
+        'jasa_kontraktor',
+        'grand_total'
+    ];
+
+    public function materialDetails() {
+        return $this->hasMany(MaterialDetail::class);
+    }
+
+    public function otherCost() {
+        return $this->hasOne(OtherCost::class);
+    }
+
+    public function productionCost() {
+        return $this->hasOne(ProductionCost::class);
+    }
     public function newUniqueId(): string
     {
         return (string) Uuid::uuid4();

@@ -6,6 +6,7 @@ use App\Models\Client;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
@@ -13,26 +14,17 @@ use Livewire\Component;
 
 class ListClient extends Component
 {
+    #[On('client-deleted')]
+    public function setMessage($message) {
+        if ($message == 'success') {
+            flash('Data client berhasil dihapus.', $message);
+        } else {
+            flash('Gagal menghapus data client.', $message);
+        }
+    }
+
     public function render()
     {
         return view('livewire.clients.list-client');
-    }
-
-    public function destroy($clientId)
-    {
-        try {
-            DB::beginTransaction();
-
-            Client::find($clientId)
-                ->delete();
-
-            DB::commit();
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            Log::error($th);
-        } catch (QueryException $ex) {
-            DB::rollBack();
-            Log::error($ex);
-        }
     }
 }

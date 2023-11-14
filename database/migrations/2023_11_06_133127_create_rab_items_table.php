@@ -15,6 +15,15 @@ return new class extends Migration
             $table->id();
             $table->uuid()
                 ->unique();
+            $table->bigInteger('subtotal_material');
+            $table->bigInteger('subtotal_ongkos_kerja')
+                ->default(0);
+            $table->bigInteger('total_biaya');
+            $table->double('lain_lain', 8, 2)
+                ->default(0);
+            $table->double('jasa_kontraktor', 8, 2)
+                ->default(0);
+            $table->bigInteger('grand_total');
             $table->timestamps();
         });
     }

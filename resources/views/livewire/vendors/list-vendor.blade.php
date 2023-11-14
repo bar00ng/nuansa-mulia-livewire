@@ -1,6 +1,8 @@
 <div>
     <x-page-header pageName="Vendor" />
 
+    <x-partials.flash />
+
     <div class="row">
         <div class="col-12">
             <div class="card shadow-lg mb-4">

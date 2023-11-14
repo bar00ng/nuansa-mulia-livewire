@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Tables;
 
+use App\Livewire\Clients\ListClient;
 use App\Models\Client;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -54,13 +55,10 @@ final class ClientTable extends PowerGridComponent
             ->addColumn('id')
             ->addColumn('kd_client')
 
-           /** Example of custom column using a closure **/
-            ->addColumn('kd_client_lower', fn (Client $model) => strtolower(e($model->kd_client)))
-
             ->addColumn('nama_client')
             ->addColumn('alamat_client')
             ->addColumn('nomor_telepon_client')
-            ->addColumn('created_at_formatted', fn (Client $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
+            ->addColumn('created_at_formatted', fn (Client $model) => Carbon::parse($model->created_at)->format('d M Y'));
     }
 
     public function columns(): array
@@ -96,7 +94,6 @@ final class ClientTable extends PowerGridComponent
             Filter::inputText('kd_client')->operators(['contains']),
             Filter::inputText('nama_client')->operators(['contains']),
             Filter::inputText('nomor_telepon_client')->operators(['contains']),
-            Filter::datetimepicker('created_at'),
         ];
     }
 
@@ -110,12 +107,12 @@ final class ClientTable extends PowerGridComponent
                 ->delete();
             DB::commit();
 
-            flash('Berhasil menghapus client.', 'success');
+            $this->dispatch('client-deleted', message:'success')->to(ListClient::class);
         } catch (\Throwable $th) {
             DB::rollBack();
             Log::error($th);
 
-            flash('Terjadi kesalahan saat menghapus data.', 'danger');
+            $this->dispatch('client-deleted', message:'danger')->to(ListClient::class);
         }
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Tables;
 
+use App\Livewire\Project\ListProject;
 use App\Models\Project;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -73,7 +74,7 @@ final class ProjectTable extends PowerGridComponent
         ->addColumn('status', function (Project $project) {
             return \App\Enums\ProjectStatus::from($project->status)->labels();
         })
-        ->addColumn('created_at_formatted', fn (Project $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
+        ->addColumn('created_at_formatted', fn (Project $model) => Carbon::parse($model->created_at)->format('d M Y'));
     }
 
     public function columns(): array
@@ -123,12 +124,12 @@ final class ProjectTable extends PowerGridComponent
                 ->delete();
             DB::commit();
 
-            flash('Berhasil menghapus vendor.', 'success');
+            $this->dispatch('client-deleted', message:'success')->to(ListProject::class);
         } catch (\Throwable $th) {
             DB::rollBack();
             Log::error($th);
 
-            flash('Terjadi kesalahan saat menghapus data.', 'danger');
+            $this->dispatch('client-deleted', message:'danger')->to(ListProject::class);
         }
     }
 

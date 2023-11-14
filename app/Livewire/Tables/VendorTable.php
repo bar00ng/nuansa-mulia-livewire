@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Tables;
 
+use App\Livewire\Vendors\ListVendor;
 use App\Models\Vendor;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -57,7 +58,7 @@ final class VendorTable extends PowerGridComponent
            /** Example of custom column using a closure **/
             ->addColumn('nama_vendor_lower', fn (Vendor $model) => strtolower(e($model->nama_vendor)))
 
-            ->addColumn('created_at_formatted', fn (Vendor $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
+            ->addColumn('created_at_formatted', fn (Vendor $model) => Carbon::parse($model->created_at)->format('d M Y'));
     }
 
     public function columns(): array
@@ -83,7 +84,6 @@ final class VendorTable extends PowerGridComponent
         return [
             Filter::inputText('id')->operators(['contains']),
             Filter::inputText('nama_vendor')->operators(['contains']),
-            Filter::datetimepicker('created_at'),
         ];
     }
 
@@ -97,12 +97,12 @@ final class VendorTable extends PowerGridComponent
                 ->delete();
             DB::commit();
 
-            flash('Berhasil menghapus vendor.', 'success');
+            $this->dispatch('vendor-deleted', message:'success')->to(ListVendor::class);
         } catch (\Throwable $th) {
             DB::rollBack();
             Log::error($th);
 
-            flash('Terjadi kesalahan saat menghapus data.', 'danger');
+            $this->dispatch('vendor-deleted', message:'success')->to(ListVendor::class);
         }
     }
 
