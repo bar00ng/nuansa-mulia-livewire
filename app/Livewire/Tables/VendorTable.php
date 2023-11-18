@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Tables;
 
-use App\Livewire\Vendors\ListVendor;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 use App\Models\Vendor;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,7 +22,7 @@ use PowerComponents\LivewirePowerGrid\Traits\WithExport;
 
 final class VendorTable extends PowerGridComponent
 {
-    use WithExport;
+    use WithExport, LivewireAlert;
 
     public function setUp(): array
     {
@@ -88,21 +88,49 @@ final class VendorTable extends PowerGridComponent
     }
 
     #[\Livewire\Attributes\On('delete')]
-    public function delete($rowId): void
-    {
-        try {
-            DB::beginTransaction();
+    public function delete($rowId): void {
+        $this->confirm('Apa anda yakin ingin menghapus vendor?', [
+            'toast' => false,
+            'position' => 'center',
+            'onConfirmed' => 'confirmed',
+            'data' => [
+                'vendor_id' => $rowId
+            ],
+        ]);
+    }
 
-            \App\Models\Vendor::find($rowId)
-                ->delete();
-            DB::commit();
+    #[\Livewire\Attributes\On('confirmed')]
+    public function confirmed($data) {
+        $vendorId = $data['vendor_id'] ?? null;
 
-            $this->dispatch('vendor-deleted', message:'success')->to(ListVendor::class);
-        } catch (\Throwable $th) {
+        if ($vendorId) {
+            try {
+                DB::beginTransaction();
+
+                $vendor = \App\Models\Vendor::find($vendorId);
+
+                if($vendor) {
+                    $vendor->delete();
+                    DB::commit();
+
+                    $this->alert('success', 'Vendor berhasil dihapus.');
+                } else {
+                    DB::rollBack();
+                    Log::error("Tidak ditemukan vendor dengan ID = $vendorId.");
+
+                    $this->alert('warning', "Terjadi kesalahan saat menghapus vendor");
+                }
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                Log::error("Throwable\t: $th");
+
+                $this->alert('warning', "Terjadi kesalahan saat menghapus vendor");
+            }
+        } else {
             DB::rollBack();
-            Log::error($th);
+            Log::error("Project ID cannot be null");
 
-            $this->dispatch('vendor-deleted', message:'success')->to(ListVendor::class);
+            $this->alert('warning', 'Terjadi kesalahan saat menghapus project.');
         }
     }
 

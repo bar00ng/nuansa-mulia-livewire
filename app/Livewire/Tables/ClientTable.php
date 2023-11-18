@@ -2,13 +2,13 @@
 
 namespace App\Livewire\Tables;
 
-use App\Livewire\Clients\ListClient;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Models\Client;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
 use PowerComponents\LivewirePowerGrid\Exportable;
@@ -22,7 +22,7 @@ use PowerComponents\LivewirePowerGrid\Traits\WithExport;
 
 final class ClientTable extends PowerGridComponent
 {
-    use WithExport;
+    use WithExport, LivewireAlert;
 
     public function setUp(): array
     {
@@ -97,27 +97,52 @@ final class ClientTable extends PowerGridComponent
         ];
     }
 
-    // #[\Livewire\Attributes\On('delete')]
-    // public function edit($rowId): void
-    // {
-    //     try {
-    //         DB::beginTransaction();
+    #[\Livewire\Attributes\On('delete')]
+    public function delete($rowId): void {
+        $this->confirm('Apa anda yakin ingin menghapus client?', [
+            'toast' => false,
+            'position' => 'center',
+            'onConfirmed' => 'confirmed',
+            'data' => [
+                'client_id' => $rowId
+            ],
+        ]);
+    }
 
-    //         \App\Models\Client::find($rowId)
-    //             ->delete();
-    //         DB::commit();
+    #[\Livewire\Attributes\On('confirmed')]
+    public function confirmed($data) {
+        $clientId = $data['client_id'] ?? null;
 
-    //         $this->dispatch('client-deleted', message:'success')->to(ListClient::class);
-    //     } catch (\Throwable $th) {
-    //         DB::rollBack();
-    //         Log::error($th);
+        if ($clientId) {
+            try {
+                DB::beginTransaction();
 
-    //         $this->dispatch('client-deleted', message:'danger')->to(ListClient::class);
-    //     }
-    // }
+                $client = \App\Models\Client::find($clientId);
 
-    #[On('client-deleted')]
-    public function clientDeleted($clientId) {}
+                if($client) {
+                    $client->delete();
+                    DB::commit();
+
+                    $this->alert('success', 'Client berhasil dihapus');
+                } else {
+                    DB::rollBack();
+                    Log::error("Tidak ditemukan client dengan ID = $clientId");
+
+                    $this->alert('warning', "Terjadi kesalahan saat menghapus client");
+                }
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                Log::error("Throwable\t: $th");
+
+                $this->alert('warning', "Terjadi kesalahan saat menghapus client");
+            }
+        } else {
+            DB::rollBack();
+            Log::error("Client ID cannot be null");
+
+            $this->alert('warning', 'Terjadi kesalahan saat menghapus client.');
+        }
+    }
 
     public function actions(\App\Models\Client $row): array
     {
@@ -136,7 +161,7 @@ final class ClientTable extends PowerGridComponent
                 ->slot('Delete')
                 ->id()
                 ->class('btn btn-danger')
-                ->dispatchTo('clients.list-client', 'trigger-delete-client', ['client' => $row])
+                ->dispatch('delete', ['rowId' => $row->id])
         ];
     }
 

@@ -14,15 +14,6 @@ use Livewire\Component;
 
 class ListVendor extends Component
 {
-    #[On('vendor-deleted')]
-    public function setMessage($message) {
-        if ($message == 'success') {
-            flash('Data vendor berhasil dihapus.', $message);
-        } else {
-            flash('Gagal menghapus data vendor.', $message);
-        }
-    }
-
     public function render()
     {
         return view('livewire.vendors.list-vendor');

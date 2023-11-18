@@ -17,11 +17,14 @@ return new class extends Migration
                 ->unique();
             $table->bigInteger('subtotal_material');
             $table->bigInteger('subtotal_ongkos_kerja')
+                ->nullable()
                 ->default(0);
             $table->bigInteger('total_biaya');
             $table->double('lain_lain', 8, 2)
+                ->nullable()
                 ->default(0);
             $table->double('jasa_kontraktor', 8, 2)
+                ->nullable()
                 ->default(0);
             $table->bigInteger('grand_total');
             $table->timestamps();

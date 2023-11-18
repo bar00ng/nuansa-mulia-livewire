@@ -1,8 +1,6 @@
 <div>
     <x-page-header pageName="{{ $project->nama_project }} - Dashboard" />
 
-    <x-partials.flash />
-
     {{-- Project Info --}}
     <div class="row">
         <div class="col">
@@ -74,8 +72,8 @@
                     <div
                         class="card-header py-3 d-flex flex-row flex-md-row flex-sm-column align-items-md-center align-items-sm-start gap-2 justify-content-md-between">
                         <h4 class="m-0 font-weight-bold text-primary">Job Details</h4>
-                        <button class="btn btn-warning" type="button" wire:click="updateJobDetails" {{ $jobDetailForm->job_details ? '' : 'disabled' }}
-                            >
+                        <button class="btn btn-warning" type="button" wire:click="updateJobDetails"
+                            {{ $jobDetailForm->job_details ? '' : 'disabled' }}>
                             <i class="bi bi-floppy-fill"></i>
                             Save Changes
                         </button>
@@ -115,8 +113,8 @@
                                         </td>
                                         <td>
                                             <button class="btn btn-danger" type="button"
-                                                wire:click="deleteJobDetail({{ $detail->id }})" disabled>
-                                                <i class="bi bi-node-minus-fill"></i>
+                                                wire:click="deleteJobDetail({{ $detail->id }})">
+                                                <i class="bi bi-trash3-fill"></i>
                                             </button>
                                         </td>
                                 @endforeach
@@ -127,7 +125,8 @@
                                                 {{ $no++ }}
                                             </td>
                                             <td>
-                                                <input type="text" wire:model='jobDetailForm.job_details.{{ $index }}.item'
+                                                <input type="text"
+                                                    wire:model='jobDetailForm.job_details.{{ $index }}.item'
                                                     placeholder="Item"
                                                     class="form-control @error('jobDetailForm.job_details.' . $index . '.item') is-invalid @enderror">
                                                 @error('jobDetailForm.job_details.' . $index . '.item')
@@ -137,7 +136,8 @@
                                                 @enderror
                                             </td>
                                             <td>
-                                                <input type="text" wire:model='jobDetailForm.job_details.{{ $index }}.ukuran'
+                                                <input type="text"
+                                                    wire:model='jobDetailForm.job_details.{{ $index }}.ukuran'
                                                     class="form-control @error('jobDetailForm.job_details.' . $index . '.ukuran') is-invalid @enderror"
                                                     placeholder="0x0, p=0cm, l=0cm">
                                                 @error('jobDetailForm.job_details.' . $index . '.ukuran')
@@ -208,8 +208,9 @@
                         <thead>
                             <tr>
                                 <th>Item</th>
-                                <th>...</th>
-                                <th>...</th>
+                                @foreach ($project->job_details->first()->vendors as $vendor)
+                                    <th>{{ $vendor->nama_vendor }}</th>
+                                @endforeach
                             </tr>
                         </thead>
 
@@ -222,11 +223,13 @@
                                     @foreach ($job_detail->vendors as $vendor)
                                         <td>
                                             @if ($vendor->pivot->rab_item_id)
-                                                <a href="{{ route('project.rab', ['job_detail' => $job_detail->uuid, 'vendor' => $vendor->uuid])}}">
+                                                <a href="{{ route('project.rab', ['job_detail' => $job_detail->uuid, 'vendor' => $vendor->uuid, 'readonly' => true]) }}"
+                                                    wire:navigate>
                                                     <i class="bi bi-check-circle-fill fs-3 text-success"></i>
                                                 </a>
                                             @else
-                                                <a href="{{ route('project.rab', ['job_detail' => $job_detail->uuid, 'vendor' => $vendor->uuid])}}" wire:navigate>
+                                                <a href="{{ route('project.rab', ['job_detail' => $job_detail->uuid, 'vendor' => $vendor->uuid]) }}"
+                                                    wire:navigate>
                                                     <i class="bi bi-x-circle-fill fs-3 text-danger"></i>
                                                 </a>
                                             @endif

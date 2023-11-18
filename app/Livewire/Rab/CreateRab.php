@@ -7,26 +7,71 @@ use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 
 class CreateRab extends Component
 {
+    use LivewireAlert;
     public \App\Models\JobDetail $job_detail;
     public \App\Models\Vendor $vendor;
-
     public RabForm $form;
 
-    public function mount() {
-        $this->form->materials[] = [
-            'item' => '',
-            'satuan' => '',
-            'quantity' => '',
-            'harga_satuan' => '',
-            'total' => ''
-        ];
+    public $readonly;
+
+    public function mount($readonly = false)
+    {
+        if ($readonly) {
+            $rab_item = \App\Models\JobDetailVendor::with('rabItem')
+                ->where('job_detail_id', $this->job_detail->id)
+                ->where('vendor_id', $this->vendor->id)
+                ->first()->rabItem;
+
+            $this->form->subtotal_material = $rab_item->subtotal_material;
+            $this->form->subtotal_other_cost = $rab_item->subtotal_ongkos_kerja;
+            $this->form->total_biaya = $rab_item->total_biaya;
+            $this->form->lain_lain_percent = $rab_item->lain_lain;
+            $this->form->lain_lain_converted = ((float) $this->form->lain_lain_percent / 100) * (float) $this->form->total_biaya;
+            $this->form->jasa_kontraktor_percent = $rab_item->jasa_kontraktor;
+            $this->form->jasa_kontraktor_converted = ((float) $this->form->jasa_kontraktor_percent / 100) * (float) $this->form->total_biaya;
+            $this->form->grand_total = $rab_item->grand_total;
+
+            $this->form->production_cost_satuan = $rab_item->productionCost->satuan ?? null;
+            $this->form->production_cost_quantity = $rab_item->productionCost->quantity ?? null;
+            $this->form->production_cost_harga_satuan = $rab_item->productionCost->harga_satuan ?? null;
+            $this->form->production_cost_total = $rab_item->productionCost->total_harga ?? null;
+
+            $this->form->other_cost_satuan = $rab_item->otherCost->satuan ?? null;
+            $this->form->other_cost_quantity = $rab_item->otherCost->quantity ?? null;
+            $this->form->other_cost_harga_satuan = $rab_item->otherCost->harga_satuan ?? null;
+            $this->form->other_cost_total = $rab_item->otherCost->total_harga ?? null;
+        }
+
+        if ($readonly) {
+            foreach ($rab_item->materialDetails as $material) {
+                $this->form->materials[] = [
+                    'item' => $material->material,
+                    'satuan' => $material->satuan,
+                    'quantity' => $material->quantity,
+                    'harga_satuan' => $material->harga_satuan,
+                    'total' => $material->total_harga,
+                ];
+            }
+        } else {
+            $this->form->materials[] = [
+                'item' => null,
+                'satuan' => null,
+                'quantity' => null,
+                'harga_satuan' => null,
+                'total' => null,
+            ];
+        }
+
+        $this->readonly = $readonly;
     }
 
-    public function onSave() {
+    public function onSave()
+    {
         $this->validate();
 
         try {
@@ -36,17 +81,19 @@ class CreateRab extends Component
             DB::commit();
             $this->form->reset();
 
-            flash('Berhasil membuat RAB.' , 'success');
-        } catch (Exception $ex) {
-            DB::rollBack();
-            Log::error($ex->getMessage());
+            // TODO Tambahkan redirect ke project dashboard
 
-            flash('Terjadi kesalahan saat membuat RAB.' , 'danger');
-        } catch (QueryException $qex) {
+            $this->alert('success', 'Berhasil membuat RAB.');
+        } catch (Exception $e) {
             DB::rollBack();
-            Log::error($qex->getMessage());
+            Log::error("Exception\t: $e");
 
-            flash('Terjadi kesalahan saat membuat RAB.' , 'danger');
+            $this->alert('warning', 'Terjadi kesalahan saat membuat RAB.');
+        } catch (QueryException $ex) {
+            DB::rollBack();
+            Log::error("Query Exception\t: $ex");
+
+            $this->alert('warning', 'Terjadi kesalahan saat membuat RAB.');
         }
     }
 
@@ -147,17 +194,19 @@ class CreateRab extends Component
         $this->calcGrandTotal();
     }
 
-    public function addMaterial() {
+    public function addMaterial()
+    {
         $this->form->materials[] = [
-            'item' => '',
-            'satuan' => '',
-            'quantity' => '',
-            'harga_satuan' => '',
-            'total' => ''
+            'item' => null,
+            'satuan' => null,
+            'quantity' => null,
+            'harga_satuan' => null,
+            'total' => null,
         ];
     }
 
-    public function removeMaterial($index) {
+    public function removeMaterial($index)
+    {
         unset($this->form->materials[$index]);
         $this->form->materials = array_values($this->form->materials);
 
@@ -167,7 +216,6 @@ class CreateRab extends Component
 
     public function render()
     {
-        return view('livewire.rab.create-rab')
-            ->title("RAB - " .  $this->job_detail->nama_job);
+        return view('livewire.rab.create-rab')->title('RAB - ' . $this->job_detail->nama_job);
     }
 }

@@ -28,17 +28,17 @@ class CreateClient extends Component
             DB::commit();
             $this->form->reset();
 
-            flash('Berhasil menambahkan client.', 'success');
+            $this->alert('success', 'Berhasil menamahkan client baru.');
         } catch (\Throwable $th) {
             Log::error($th);
             DB::rollBack();
 
-            flash('Terjadi kesalahan saat menambahkan client.', 'danger');
+            $this->alert('warning', 'Terjadi kesalahan saat menambahkan client baru.');
         } catch (QueryException $ex) {
             Log::error($ex);
             DB::rollBack();
 
-            flash('Terjadi kesalahan saat menambahkan client.', 'danger');
+            $this->alert('warning', 'Terjadi kesalahan saat menambahkan client baru.');
         }
     }
 

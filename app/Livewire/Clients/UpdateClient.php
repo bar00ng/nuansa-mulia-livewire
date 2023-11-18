@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Clients;
 
+use Livewire\Attributes\Title;
 use Livewire\Component;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use App\Livewire\Forms\ClientForm;
@@ -32,17 +33,17 @@ class UpdateClient extends Component
             $this->form->update($this->client->id);
             DB::commit();
 
-            flash('Berhasil mengubah data client.', 'success');
+            $this->alert('success', 'Berhasil mengubah data client.');
         } catch (\Throwable $th) {
-            Log::error($th);
+            Log::error("Throwable\t: $th");
             DB::rollBack();
 
-            flash('Terjadi kesalahan saat mengubah data client.', 'danger');
+            $this->alert('warning', 'Terjadi kesalahan saat mengubah data client.');
         } catch (QueryException $ex) {
-            Log::error($ex);
+            Log::error("Query Exception\t: $ex");
             DB::rollBack();
 
-            flash('Terjadi kesalahan saat mengubah data client.', 'danger');
+            $this->alert('warning', 'Terjadi kesalahan saat mengubah data client.');
         }
     }
 

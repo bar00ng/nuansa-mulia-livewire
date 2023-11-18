@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Tables;
 
-use App\Livewire\Project\ListProject;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 use App\Models\Project;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,7 +22,7 @@ use PowerComponents\LivewirePowerGrid\Traits\WithExport;
 
 final class ProjectTable extends PowerGridComponent
 {
-    use WithExport;
+    use WithExport, LivewireAlert;
 
     public ?string $client_id = null;
 
@@ -115,24 +115,51 @@ final class ProjectTable extends PowerGridComponent
     }
 
     #[\Livewire\Attributes\On('delete')]
-    public function delete($rowId): void
-    {
-        try {
-            DB::beginTransaction();
-
-            \App\Models\Project::find($rowId)
-                ->delete();
-            DB::commit();
-
-            $this->dispatch('client-deleted', message:'success')->to(ListProject::class);
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            Log::error($th);
-
-            $this->dispatch('client-deleted', message:'danger')->to(ListProject::class);
-        }
+    public function delete($rowId): void {
+        $this->confirm('Apa anda yakin ingin menghapus project?', [
+            'toast' => false,
+            'position' => 'center',
+            'onConfirmed' => 'confirmed',
+            'data' => [
+                'project_id' => $rowId
+            ],
+        ]);
     }
 
+    #[\Livewire\Attributes\On('confirmed')]
+    public function confirmed($data) {
+        $projectId = $data['project_id'] ?? null;
+
+        if ($projectId) {
+            try {
+                DB::beginTransaction();
+
+                $project = \App\Models\Project::find($projectId);
+
+                if($project) {
+                    $project->delete();
+                    DB::commit();
+
+                    $this->alert('success', 'Project berhasil dihapus.');
+                } else {
+                    DB::rollBack();
+                    Log::error("Tidak ditemukan project dengan ID = $projectId.");
+
+                    $this->alert('warning', "Terjadi kesalahan saat menghapus project");
+                }
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                Log::error("Throwable\t: $th");
+
+                $this->alert('warning', "Terjadi kesalahan saat menghapus project");
+            }
+        } else {
+            DB::rollBack();
+            Log::error("Project ID cannot be null");
+
+            $this->alert('warning', 'Terjadi kesalahan saat menghapus project.');
+        }
+    }
     public function actions(\App\Models\Project $row): array
     {
         return [

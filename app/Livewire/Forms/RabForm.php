@@ -67,6 +67,7 @@ class RabForm extends Form
         ];
     }
 
+    // TODO Buat validation message
     public function messages()
     {
         return [
@@ -87,7 +88,7 @@ class RabForm extends Form
         ]);
 
         foreach ($this->materials as $material) {
-            $rabItem->materialDetail()->create([
+            $rabItem->materialDetails()->create([
                 'material' => $material['item'],
                 'satuan' => $material['satuan'],
                 'quantity' => $material['quantity'],
@@ -106,7 +107,7 @@ class RabForm extends Form
         }
 
         if ($this->other_cost_harga_satuan && $this->other_cost_quantity && $this->other_cost_harga_satuan && $this->other_cost_total) {
-            $rabItem->productionCost()->create([
+            $rabItem->otherCost()->create([
                 'satuan' => $this->other_cost_harga_satuan,
                 'quantity' => $this->other_cost_quantity,
                 'harga_satuan' => $this->other_cost_harga_satuan,
@@ -117,7 +118,7 @@ class RabForm extends Form
         \App\Models\JobDetailVendor::where('job_detail_id', $job_detail_id)
             ->where('vendor_id', $vendor_id)
             ->update([
-                'rab_item_id' => $rabItem->id
+                'rab_item_id' => $rabItem->id,
             ]);
     }
 }

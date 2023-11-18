@@ -1,8 +1,6 @@
 <div>
     <x-page-header pageName="Tambah Project" />
 
-    <x-partials.flash />
-
     <form wire:submit="onSave">
         <div class="row">
             <div class="col-md-6 col-sm-12">

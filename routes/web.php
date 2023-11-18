@@ -36,7 +36,7 @@ Route::prefix('project')
             ->name('create');
         Route::get('/{project:uuid}', \App\Livewire\Project\ShowProject::class)
             ->name('show');
-        Route::get('/{job_detail:uuid}/{vendor:uuid}', \App\Livewire\Rab\CreateRab::class)
+        Route::get('/{job_detail:uuid}/{vendor:uuid}/{readonly?}', \App\Livewire\Rab\CreateRab::class)
             ->name('rab');
     });
 

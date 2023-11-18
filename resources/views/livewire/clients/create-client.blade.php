@@ -1,8 +1,6 @@
 <div>
     <x-page-header pageName="Tambah Client" />
 
-    <x-partials.flash />
-
     <div class="row">
         <div class="col-12">
             <div class="card">

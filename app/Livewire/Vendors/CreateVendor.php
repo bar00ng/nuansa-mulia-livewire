@@ -7,13 +7,15 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Title;
-use RealRashid\SweetAlert\Facades\Alert;
 use Livewire\Component;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 #[Title('Tambah Vendor')]
 
 class CreateVendor extends Component
 {
+    use LivewireAlert;
+
     public VendorForm $form;
 
     public function storeData() {
@@ -25,17 +27,17 @@ class CreateVendor extends Component
             DB::commit();
             $this->form->reset();
 
-            flash('Berhasil menambahkan vendor.', 'success');
+            $this->alert('success', 'Berhasil menambahkan vendor baru.');
         } catch (\Throwable $th) {
-            Log::error($th);
+            Log::error("Throwable\t: $th");
             DB::rollBack();
 
-            flash('Terjadi kesalahan saat menambahkan vendor.', 'danger');
+            $this->alert('warning', 'Terjadi kesalahan saat menghapus vendor.');
         } catch (QueryException $ex) {
-            Log::error($ex);
+            Log::error("Query Exception\t: $ex");
             DB::rollBack();
 
-            flash('Terjadi kesalahan saat menambahkan vendor.', 'danger');
+            $this->alert('warning', 'Terjadi kesalahan saat menghapus vendor.');
         }
     }
 

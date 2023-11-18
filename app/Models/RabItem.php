@@ -9,9 +9,13 @@ use Ramsey\Uuid\Uuid;
 
 class RabItem extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuids;
 
-    use HasUuids;
+    protected $attributes = [
+        "subtotal_ongkos_kerja" => 0,
+        'lain_lain' => 0,
+        'jasa_kontraktor' => 0
+    ];
 
     protected $fillable = [
         'subtotal_material',

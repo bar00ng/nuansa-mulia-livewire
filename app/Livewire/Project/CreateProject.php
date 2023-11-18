@@ -5,8 +5,6 @@ namespace App\Livewire\Project;
 use App\Livewire\Forms\JobDetailForm;
 use App\Livewire\Forms\ProjectForm;
 use App\Models\Client;
-use App\Models\JobDetail;
-use App\Models\Project;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -80,18 +78,17 @@ class CreateProject extends Component
             $this->projectForm->reset();
             $this->jobDetailForm->reset();
 
-            $this->dispatch('job-detail-updated');
-            flash('Berhasil menambahkan project.', 'success');
+            $this->alert('success', 'Berhasil menambahkan project baru.');
         } catch (\Throwable $th) {
-            Log::error($th);
+            Log::error("Throwable\t: $th");
             DB::rollBack();
 
-            flash('Terjadi kesalahan saat menambahkan project.', 'danger');
+            $this->alert('warning', 'Terjadi kesalahan saat menghapus project.');
         } catch (QueryException $ex) {
-            Log::error($ex);
+            Log::error("Query Exception\t: $ex");
             DB::rollBack();
 
-            flash('Terjadi kesalahan saat menambahkan project.', 'danger');
+            $this->alert('warning', 'Terjadi kesalahan saat menghapus project.');
         }
     }
 }

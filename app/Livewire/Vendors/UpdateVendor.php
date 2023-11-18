@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
-use Livewire\Attributes\Title;
 
 class UpdateVendor extends Component
 {
@@ -30,18 +29,18 @@ class UpdateVendor extends Component
             $this->form->update($this->vendor->id);
             DB::commit();
 
-            flash('Berhasil mengubah data vendor.', 'success');
+            $this->alert('success', 'Berhasil mengubah data vendor.');
         } catch (\Throwable $th) {
-            Log::error($th);
+            Log::error("Throwable\t: $th");
             DB::rollBack();
 
-            flash('Terjadi kesalahan saat mengubah data vendor..', 'danger');
+            $this->alert('warning', 'Terjadi kesalahan saat mengubah data vendor');
 
         } catch (QueryException $ex) {
-            Log::error($ex);
+            Log::error("Query Exception\t: $ex");
             DB::rollBack();
 
-            flash('Terjadi kesalahan saat mengubah data vendor..', 'danger');
+            $this->alert('warning', 'Terjadi kesalahan saat mengubah data vendor');
 
         }
     }
