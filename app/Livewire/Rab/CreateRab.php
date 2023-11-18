@@ -22,10 +22,10 @@ class CreateRab extends Component
     public function mount($readonly = false)
     {
         if ($readonly) {
-            $rab_item = \App\Models\JobDetailVendor::with('rabItem')
+            $rab_item = \App\Models\JobDetailVendor::with('rab_item')
                 ->where('job_detail_id', $this->job_detail->id)
                 ->where('vendor_id', $this->vendor->id)
-                ->first()->rabItem;
+                ->first()->rab_item;
 
             $this->form->subtotal_material = $rab_item->subtotal_material;
             $this->form->subtotal_other_cost = $rab_item->subtotal_ongkos_kerja;

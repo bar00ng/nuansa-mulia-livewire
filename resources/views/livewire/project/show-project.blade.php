@@ -31,7 +31,7 @@
 
                                 <dt class="col-sm-4">Status</dt>
                                 <dd class="col-sm-6">
-                                    {{ $project->status }}
+                                    {{ \App\Enums\ProjectStatus::from($project->status)->labels() }}
                                 </dd>
 
                                 <dt class="col-sm-4">Budget RAB</dt>
@@ -65,7 +65,6 @@
 
     {{-- Job Detail Table --}}
     <form wire:submit="updateJobDetail">
-
         <div class="row">
             <div class="col">
                 <div class="card shadow-lg">
@@ -79,117 +78,121 @@
                         </button>
                     </div>
                     <div class="card-body">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Item</th>
-                                    <th>Ukuran</th>
-                                    <th>Keterangan</th>
-                                    <th>Harga Penawaran</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            @php
-                                $no = 1;
-                            @endphp
-                            <tbody>
-                                @foreach ($project->job_details as $detail)
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
                                     <tr>
-                                        <td>
-                                            {{ $no++ }}
-                                        </td>
-                                        <td>
-                                            {{ $detail->nama_job }}
-                                        </td>
-                                        <td>
-                                            {{ $detail->ukuran_job }}
-                                        </td>
-                                        <td>
-                                            {{ $detail->keterangan_job }}
-                                        </td>
-                                        <td>
-                                            {{ number_format($detail->harga_penawaran_job) }}
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-danger" type="button"
-                                                wire:click="deleteJobDetail({{ $detail->id }})">
-                                                <i class="bi bi-trash3-fill"></i>
-                                            </button>
-                                        </td>
-                                @endforeach
-                                @if ($jobDetailForm->job_details)
-                                    @foreach ($jobDetailForm->job_details as $index => $job_detail)
+                                        <th>#</th>
+                                        <th>Item</th>
+                                        <th>Ukuran</th>
+                                        <th>Keterangan</th>
+                                        <th>Harga Penawaran</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                @php
+                                    $no = 1;
+                                @endphp
+                                <tbody>
+                                    @foreach ($project->job_details as $detail)
                                         <tr>
                                             <td>
                                                 {{ $no++ }}
                                             </td>
                                             <td>
-                                                <input type="text"
-                                                    wire:model='jobDetailForm.job_details.{{ $index }}.item'
-                                                    placeholder="Item"
-                                                    class="form-control @error('jobDetailForm.job_details.' . $index . '.item') is-invalid @enderror">
-                                                @error('jobDetailForm.job_details.' . $index . '.item')
-                                                    <div class="invalid-feedback">
-                                                        {{ $message }}
-                                                    </div>
-                                                @enderror
+                                                {{ $detail->nama_job }}
                                             </td>
                                             <td>
-                                                <input type="text"
-                                                    wire:model='jobDetailForm.job_details.{{ $index }}.ukuran'
-                                                    class="form-control @error('jobDetailForm.job_details.' . $index . '.ukuran') is-invalid @enderror"
-                                                    placeholder="0x0, p=0cm, l=0cm">
-                                                @error('jobDetailForm.job_details.' . $index . '.ukuran')
-                                                    <div class="invalid-feedback">
-                                                        {{ $message }}
-                                                    </div>
-                                                @enderror
+                                                {{ $detail->ukuran_job }}
                                             </td>
                                             <td>
-                                                <input type="text"
-                                                    wire:model='jobDetailForm.job_details.{{ $index }}.keterangan'
-                                                    class="form-control @error('jobDetailForm.job_details.' . $index . '.keterangan') is-invalid @enderror"
-                                                    placeholder="Keterangan Item">
-                                                @error('jobDetailForm.job_details.' . $index . '.keterangan')
-                                                    <div class="invalid-feedback">
-                                                        {{ $message }}
-                                                    </div>
-                                                @enderror
+                                                {{ $detail->keterangan_job }}
                                             </td>
                                             <td>
-                                                <div class="input-group">
-                                                    <div class="input-group-text">Rp</div>
+                                                {{ number_format($detail->harga_penawaran_job) }}
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-danger" type="button"
+                                                    wire:click="deleteJobDetail({{ $detail->id }})">
+                                                    <i class="bi bi-trash3-fill"></i>
+                                                </button>
+                                            </td>
+                                    @endforeach
+                                    @if ($jobDetailForm->job_details)
+                                        @foreach ($jobDetailForm->job_details as $index => $job_detail)
+                                            <tr>
+                                                <td>
+                                                    {{ $no++ }}
+                                                </td>
+                                                <td>
                                                     <input type="text"
-                                                        wire:model='jobDetailForm.job_details.{{ $index }}.harga_penawaran'
-                                                        class="form-control @error('jobDetailForm.job_details.' . $index . '.harga_penawaran') is-invalid @enderror"
-                                                        placeholder="00.00">
-                                                    @error('jobDetailForm.job_details.' . $index . '.harga_penawaran')
+                                                        wire:model='jobDetailForm.job_details.{{ $index }}.item'
+                                                        placeholder="Item"
+                                                        class="form-control @error('jobDetailForm.job_details.' . $index . '.item') is-invalid @enderror">
+                                                    @error('jobDetailForm.job_details.' . $index . '.item')
                                                         <div class="invalid-feedback">
                                                             {{ $message }}
                                                         </div>
                                                     @enderror
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-danger" type="button"
-                                                    wire:click='removeJobDetail({{ $index }})'>
-                                                    <i class="bi bi-node-minus-fill"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                @endif
-                                <tr>
-                                    <td colspan="6">
-                                        <button class="btn w-100 btn-success" type="button" wire:click="addJobDetail">
-                                            <i class="bi bi-node-plus-fill"></i>
-                                            Tambah Job Detail
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                                </td>
+                                                <td>
+                                                    <input type="text"
+                                                        wire:model='jobDetailForm.job_details.{{ $index }}.ukuran'
+                                                        class="form-control @error('jobDetailForm.job_details.' . $index . '.ukuran') is-invalid @enderror"
+                                                        placeholder="0x0, p=0cm, l=0cm">
+                                                    @error('jobDetailForm.job_details.' . $index . '.ukuran')
+                                                        <div class="invalid-feedback">
+                                                            {{ $message }}
+                                                        </div>
+                                                    @enderror
+                                                </td>
+                                                <td>
+                                                    <input type="text"
+                                                        wire:model='jobDetailForm.job_details.{{ $index }}.keterangan'
+                                                        class="form-control @error('jobDetailForm.job_details.' . $index . '.keterangan') is-invalid @enderror"
+                                                        placeholder="Keterangan Item">
+                                                    @error('jobDetailForm.job_details.' . $index . '.keterangan')
+                                                        <div class="invalid-feedback">
+                                                            {{ $message }}
+                                                        </div>
+                                                    @enderror
+                                                </td>
+                                                <td>
+                                                    <div class="input-group">
+                                                        <div class="input-group-text">Rp</div>
+                                                        <input type="text"
+                                                            wire:model='jobDetailForm.job_details.{{ $index }}.harga_penawaran'
+                                                            class="form-control @error('jobDetailForm.job_details.' . $index . '.harga_penawaran') is-invalid @enderror"
+                                                            placeholder="00.00">
+                                                        @error('jobDetailForm.job_details.' . $index .
+                                                            '.harga_penawaran')
+                                                            <div class="invalid-feedback">
+                                                                {{ $message }}
+                                                            </div>
+                                                        @enderror
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-danger" type="button"
+                                                        wire:click='removeJobDetail({{ $index }})'>
+                                                        <i class="bi bi-node-minus-fill"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
+                                    <tr>
+                                        <td colspan="6">
+                                            <button class="btn w-100 btn-success" type="button"
+                                                wire:click="addJobDetail">
+                                                <i class="bi bi-node-plus-fill"></i>
+                                                Tambah Job Detail
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -204,43 +207,106 @@
                     <h4 class="m-0 font-weight-bold text-primary">RAB Items</h4>
                 </div>
                 <div class="card-body">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Item</th>
-                                @foreach ($project->job_details->first()->vendors as $vendor)
-                                    <th>{{ $vendor->nama_vendor }}</th>
-                                @endforeach
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            @foreach ($project->job_details as $job_detail)
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
                                 <tr>
-                                    <td>
-                                        {{ $job_detail->nama_job }}
-                                    </td>
-                                    @foreach ($job_detail->vendors as $vendor)
-                                        <td>
-                                            @if ($vendor->pivot->rab_item_id)
-                                                <a href="{{ route('project.rab', ['job_detail' => $job_detail->uuid, 'vendor' => $vendor->uuid, 'readonly' => true]) }}"
-                                                    wire:navigate>
-                                                    <i class="bi bi-check-circle-fill fs-3 text-success"></i>
-                                                </a>
-                                            @else
-                                                <a href="{{ route('project.rab', ['job_detail' => $job_detail->uuid, 'vendor' => $vendor->uuid]) }}"
-                                                    wire:navigate>
-                                                    <i class="bi bi-x-circle-fill fs-3 text-danger"></i>
-                                                </a>
-                                            @endif
-                                        </td>
+                                    <th>Item</th>
+                                    @foreach ($project->job_details->first()->vendors as $vendor)
+                                        <th>{{ $vendor->nama_vendor }}</th>
                                     @endforeach
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+
+                            <tbody>
+                                @foreach ($project->job_details as $job_detail)
+                                    <tr>
+                                        <td>
+                                            {{ $job_detail->nama_job }}
+                                        </td>
+                                        @foreach ($job_detail->vendors as $vendor)
+                                            <td>
+                                                @if ($vendor->pivot->rab_item_id)
+                                                    <a href="{{ route('project.rab', ['job_detail' => $job_detail->uuid, 'vendor' => $vendor->uuid, 'readonly' => true]) }}"
+                                                        wire:navigate>
+                                                        <i class="bi bi-check-circle-fill fs-3 text-success"></i>
+                                                    </a>
+                                                @else
+                                                    <a href="{{ route('project.rab', ['job_detail' => $job_detail->uuid, 'vendor' => $vendor->uuid]) }}"
+                                                        wire:navigate>
+                                                        <i class="bi bi-x-circle-fill fs-3 text-danger"></i>
+                                                    </a>
+                                                @endif
+                                            </td>
+                                        @endforeach
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    {{-- Summary Table --}}
+    <div class="row">
+        <div class="col">
+            <div class="card shadow-lg">
+                <div class="card-header py-3 d-flex flex-row align-items-center">
+                    <h4 class="m-0 font-weight-bold text-primary">RAB Items</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    @foreach ($project->job_details->first()->vendors as $vendor)
+                                        <th colspan="3">{{ $vendor->nama_vendor }}</th>
+                                    @endforeach
+                                </tr>
+                                <tr>
+                                    <th>
+                                        &nbsp;
+                                    </th>
+                                    @foreach ($project->job_details->first()->vendors as $vendor)
+                                        <th>RAB</th>
+                                        <th>Profit</th>
+                                        <th>%</th>
+                                    @endforeach
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach ($project->job_details as $job_detail)
+                                    <tr>
+                                        <td>
+                                            {{ $job_detail->nama_job }}
+                                        </td>
+                                        @foreach ($job_detail->vendors as $vendor)
+                                            @php
+                                                $grandTotal = $vendor->pivot->rab_item->grand_total ?? 0;
+                                            @endphp
+                                            <td>
+                                                {{ number_format($grandTotal) }}
+                                            </td>
+                                            <td>
+                                                {{ number_format($job_detail->harga_penawaran_job - $grandTotal) }}
+                                            </td>
+                                            <td>
+                                                {{ number_format(($job_detail->harga_penawaran_job - $grandTotal) / $job_detail->harga_penawaran_job)  . '%' }}
+                                            </td>
+                                        @endforeach
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TODO Form alokasi vendor- job detail-->
 </div>

@@ -40,4 +40,5 @@ Route::prefix('project')
             ->name('rab');
     });
 
+Route::get('rab-export', [\App\Http\Controllers\Exports\Rab::class, 'index']);
 Route::get('logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);

@@ -121,4 +121,6 @@ class ShowProject extends Component
     {
         return view('livewire.project.show-project')->title($this->project->nama_project);
     }
+
+    // TODO Handler alokasi vendor-job detail
 }

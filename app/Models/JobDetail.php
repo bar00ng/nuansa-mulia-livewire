@@ -22,8 +22,10 @@ class JobDetail extends Model
 
     public function vendors()
     {
+        // TODO Eager Load rab item relations
         return $this->belongsToMany(Vendor::class)
-            ->withPivot(['rab_item_id']);
+            ->withPivot(['rab_item_id'])
+            ->using(\App\Models\JobDetailVendor::class);
     }
 
     public function newUniqueId(): string
