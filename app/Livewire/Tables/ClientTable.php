@@ -150,7 +150,7 @@ final class ClientTable extends PowerGridComponent
             Button::add('edit')->render(function (\App\Models\Client $client) {
                 return Blade::render(
                     <<<HTML
-                     <a href="{{ route('client.edit', '$client->uuid') }}" class="btn btn-warning" wire:navigate>
+                     <a href="{{ route('client.edit', '$client->id') }}" class="btn btn-warning" wire:navigate>
                         <i class="bi bi-pencil-square"></i>
                      </a>
                     HTML

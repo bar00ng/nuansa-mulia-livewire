@@ -1,6 +1,16 @@
 <div>
     <x-page-header pageName="{{ $project->nama_project }} - Dashboard" />
 
+    <div class="row">
+        <div class="col">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <x-tab :projectId="$project->id"/>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- Project Info --}}
     <div class="row">
         <div class="col">
@@ -94,7 +104,7 @@
                                     $no = 1;
                                 @endphp
                                 <tbody>
-                                    @foreach ($project->job_details as $detail)
+                                    @foreach ($job_details as $detail)
                                         <tr>
                                             <td>
                                                 {{ $no++ }}
@@ -212,14 +222,14 @@
                             <thead>
                                 <tr>
                                     <th>Item</th>
-                                    @foreach ($project->job_details->first()->vendors as $vendor)
+                                    @foreach ($vendor_attached as $vendor)
                                         <th>{{ $vendor->nama_vendor }}</th>
                                     @endforeach
                                 </tr>
                             </thead>
 
                             <tbody>
-                                @foreach ($project->job_details as $job_detail)
+                                @foreach ($job_details as $job_detail)
                                     <tr>
                                         <td>
                                             {{ $job_detail->nama_job }}
@@ -227,12 +237,12 @@
                                         @foreach ($job_detail->vendors as $vendor)
                                             <td>
                                                 @if ($vendor->pivot->rab_item_id)
-                                                    <a href="{{ route('project.rab', ['job_detail' => $job_detail->uuid, 'vendor' => $vendor->uuid, 'readonly' => true]) }}"
+                                                    <a href="{{ route('project.rab', ['job_detail' => $job_detail->id, 'vendor' => $vendor->id, 'readonly' => true]) }}"
                                                         wire:navigate>
                                                         <i class="bi bi-check-circle-fill fs-3 text-success"></i>
                                                     </a>
                                                 @else
-                                                    <a href="{{ route('project.rab', ['job_detail' => $job_detail->uuid, 'vendor' => $vendor->uuid]) }}"
+                                                    <a href="{{ route('project.rab', ['job_detail' => $job_detail->id, 'vendor' => $vendor->id]) }}"
                                                         wire:navigate>
                                                         <i class="bi bi-x-circle-fill fs-3 text-danger"></i>
                                                     </a>
@@ -242,6 +252,26 @@
                                     </tr>
                                 @endforeach
                             </tbody>
+
+                            {{-- Akan Muncul ketika $isRabFilled jadi true --}}
+                            @if ($isRabFilled)
+                                <tfoot>
+                                    <tr>
+                                        <th>
+                                            &nbsp;
+                                        </th>
+                                        @foreach ($vendor_attached as $vendor)
+                                            <td>
+                                                <a href="{{ route('report', ['project' => $project->id, 'vendor' => $vendor->id]) }}"
+                                                    class="text-success link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">
+                                                    <i class="bi bi-download"></i>
+                                                    Report
+                                                </a>
+                                            </td>
+                                        @endforeach
+                                    </tr>
+                                </tfoot>
+                            @endif
                         </table>
                     </div>
                 </div>
@@ -254,7 +284,7 @@
         <div class="col">
             <div class="card shadow-lg">
                 <div class="card-header py-3 d-flex flex-row align-items-center">
-                    <h4 class="m-0 font-weight-bold text-primary">RAB Items</h4>
+                    <h4 class="m-0 font-weight-bold text-primary">Summary RAB</h4>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -262,7 +292,7 @@
                             <thead>
                                 <tr>
                                     <th>Item</th>
-                                    @foreach ($project->job_details->first()->vendors as $vendor)
+                                    @foreach ($vendor_attached as $vendor)
                                         <th colspan="3">{{ $vendor->nama_vendor }}</th>
                                     @endforeach
                                 </tr>
@@ -270,7 +300,7 @@
                                     <th>
                                         &nbsp;
                                     </th>
-                                    @foreach ($project->job_details->first()->vendors as $vendor)
+                                    @foreach ($vendor_attached as $vendor)
                                         <th>RAB</th>
                                         <th>Profit</th>
                                         <th>%</th>
@@ -279,7 +309,7 @@
                             </thead>
 
                             <tbody>
-                                @foreach ($project->job_details as $job_detail)
+                                @foreach ($job_details as $job_detail)
                                     <tr>
                                         <td>
                                             {{ $job_detail->nama_job }}
@@ -287,15 +317,23 @@
                                         @foreach ($job_detail->vendors as $vendor)
                                             @php
                                                 $grandTotal = $vendor->pivot->rab_item->grand_total ?? 0;
+                                                $profit = $job_detail->harga_penawaran_job - $grandTotal;
+                                                $percent = ($job_detail->harga_penawaran_job - $grandTotal) / $job_detail->harga_penawaran_job;
                                             @endphp
                                             <td>
                                                 {{ number_format($grandTotal) }}
                                             </td>
-                                            <td>
-                                                {{ number_format($job_detail->harga_penawaran_job - $grandTotal) }}
+                                            <td
+                                                class="@if ($profit > 0) text-success
+                                            @else
+                                                text-danger @endif">
+                                                {{ number_format($profit) }}
                                             </td>
-                                            <td>
-                                                {{ number_format(($job_detail->harga_penawaran_job - $grandTotal) / $job_detail->harga_penawaran_job)  . '%' }}
+                                            <td
+                                                class="@if ($percent > 0) text-success
+                                                @else
+                                                    text-danger @endif">
+                                                {{ number_format($percent) . '%' }}
                                             </td>
                                         @endforeach
                                     </tr>
@@ -308,5 +346,76 @@
         </div>
     </div>
 
-    <!-- TODO Form alokasi vendor- job detail-->
+    @if ($isRabFilled)
+        <div class="row">
+            <div class="col">
+                <div class="card shadow-lg">
+                    <div class="card-header py-3 d-flex flex-row align-items-center">
+                        <h4 class="m-0 font-weight-bold text-primary">Alokasi Vendor</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <form wire:submit="alocateVendor">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Item</th>
+                                            <th>Vendor</th>
+                                            <th>RAB</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($job_details as $job_detail)
+                                            <tr>
+                                                <td>
+                                                    {{ $job_detail->nama_job }}
+                                                </td>
+                                                <td>
+                                                    @if ($job_detail->vendor_id)
+                                                        {{ $job_detail->selectedVendor->nama_vendor }}
+                                                    @else
+                                                        <div class="input-group">
+                                                            <select
+                                                                class="form-control @error('vendorAlocationForm.alokasi_vendor.' . $job_detail->id . '.vendor') is-invalid @enderror"
+                                                                wire:model.live="vendorAlocationForm.alokasi_vendor.{{ $job_detail->id }}.vendor">
+                                                                <option value="">-- PILIH VENDOR --</option>
+                                                                @foreach ($vendor_attached as $vendor)
+                                                                    <option value="{{ $vendor->id }}">
+                                                                        {{ $vendor->nama_vendor }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                            @error('vendorAlocationForm.alokasi_vendor.' .
+                                                                $job_detail->id . '.vendor')
+                                                                <div class="invalid-feedback text-start">
+                                                                    {{ $message }}</div>
+                                                            @enderror
+                                                        </div>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <!-- TODO: Tampilkan RAB dari vendor yang terpilih -->
+                                                    -
+                                                </td>
+                                            </tr>
+                                        @endforeach
+
+                                        @if (!$project->job_details->first()->selectedVendor)
+                                            <tr>
+                                                <td colspan="6">
+                                                    <button class="btn w-100 btn-success" type="submit">
+                                                        <i class="bi bi-node-plus-fill"></i>
+                                                        Simpan Data
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    </tbody>
+                                </table>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>

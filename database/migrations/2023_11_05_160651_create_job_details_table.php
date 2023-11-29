@@ -13,8 +13,6 @@ return new class extends Migration
     {
         Schema::create('job_details', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid')
-                ->unique();
             $table->string('nama_job');
             $table->string('ukuran_job');
             $table->text('keterangan_job');
@@ -22,7 +20,11 @@ return new class extends Migration
                 ->default(0);
             $table->foreignId('project_id')
                 ->constrained()
-                ->onDelete('cascade');
+                ->cascadeOnDelete();
+            $table->foreignId('vendor_id')
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
             $table->timestamps();
         });
     }

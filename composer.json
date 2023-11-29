@@ -12,10 +12,10 @@
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.0",
+        "maatwebsite/excel": "^3.1",
         "openspout/openspout": "^4.19",
         "power-components/livewire-powergrid": "^5.1",
-        "rap2hpoutre/laravel-log-viewer": "^2.3",
-        "spatie/laravel-flash": "^1.9"
+        "rap2hpoutre/laravel-log-viewer": "^2.3"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.9",

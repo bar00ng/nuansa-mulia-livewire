@@ -5,6 +5,10 @@
         </a>
 
         <ul class="sidebar-nav">
+            <li class="sidebar-header">
+                Main Menu
+            </li>
+
             <x-partials.nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 <i class="align-middle" data-feather="sliders"></i>
                 <span class="align-middle">Dashboard</span>

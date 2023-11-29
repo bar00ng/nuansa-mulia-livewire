@@ -13,8 +13,6 @@ return new class extends Migration
     {
         Schema::create('rab_items', function (Blueprint $table) {
             $table->id();
-            $table->uuid()
-                ->unique();
             $table->bigInteger('subtotal_material');
             $table->bigInteger('subtotal_ongkos_kerja')
                 ->nullable()

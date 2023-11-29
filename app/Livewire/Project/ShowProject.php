@@ -3,6 +3,7 @@
 namespace App\Livewire\Project;
 
 use App\Livewire\Forms\JobDetailForm;
+use App\Livewire\Forms\VendorAlocationForm;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -14,8 +15,14 @@ class ShowProject extends Component
 {
     use LivewireAlert;
 
+    public VendorAlocationForm $vendorAlocationForm;
+
+    public \App\Models\Project $project;
+
+    public JobDetailForm $jobDetailForm;
+
     #[On("job-detail-updated")]
-    public function jobDetailUpdated($jobDetail) {
+    public function updateJobDetail($jobDetail) {
     }
 
     #[On("confirmed")]
@@ -54,9 +61,6 @@ class ShowProject extends Component
         }
     }
 
-    public \App\Models\Project $project;
-
-    public JobDetailForm $jobDetailForm;
 
     public function deleteJobDetail($jobDetailId)
     {
@@ -72,7 +76,14 @@ class ShowProject extends Component
 
     public function mount()
     {
-        $this->project->load('job_details', 'job_details.vendors');
+        $this->project->load('job_details.vendors');
+
+        foreach ($this->project->job_details as $job_detail) {
+            $this->vendorAlocationForm->alokasi_vendor[$job_detail->id] = [
+                "vendor" => ''
+            ];
+        }
+
         $this->jobDetailForm->job_details = [];
     }
 
@@ -119,8 +130,48 @@ class ShowProject extends Component
 
     public function render()
     {
-        return view('livewire.project.show-project')->title($this->project->nama_project);
+        $job_details = $this->project->job_details;
+
+        $vendor_attached = $job_details->first()->vendors;
+
+        $isRabFilled = true;
+        foreach ($job_details as $job_detail) {
+            foreach ($job_detail->vendors as $vendor) {
+                if ($vendor->pivot->rab_item_id == null) {
+                    $isRabFilled = false;
+                    break 2;
+                }
+            }
+        }
+
+        return view('livewire.project.show-project', [
+            'job_details' => $job_details,
+            'vendor_attached' => $vendor_attached,
+            'isRabFilled' => $isRabFilled
+        ])->title($this->project->nama_project);
     }
 
-    // TODO Handler alokasi vendor-job detail
+    public function alocateVendor() {
+        $this->vendorAlocationForm->validate();
+
+        try{
+            DB::beginTransaction();
+
+            $this->vendorAlocationForm->save();
+
+            DB::commit();
+
+            $this->alert('success', 'Berhasil mengalokasikan vendor');
+        } catch (QueryException $ex) {
+            DB::rollBack();
+            Log::error("Query Exception\t: " . $ex->getMessage());
+
+            $this->alert('warning', 'Terjadi kesalahan saat mengalokasi vendor.');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error("Query Exception\t: " . $th->getMessage());
+
+            $this->alert('warning', 'Terjadi kesalahan saat mengalokasi vendor.');
+        }
+    }
 }

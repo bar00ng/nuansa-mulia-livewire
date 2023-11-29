@@ -12,20 +12,21 @@ return new class extends Migration {
     {
         Schema::create('job_detail_vendor', function (Blueprint $table) {
             $table->foreignId('job_detail_id')
-            ->nullOnDelete()
-                ->constrained();
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
             $table->foreignId('vendor_id')
-            ->nullOnDelete()
-                ->constrained();
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
             $table
                 ->foreignId('rab_item_id')
                 ->nullable()
-                ->default(null)
-                ->nullOnDelete()
-                ->constrained();
+                ->constrained()
+                ->nullOnDelete();
             $table->foreignId('project_id')
                 ->constrained()
-                ->onDelete('cascade');
+                ->cascadeOnDelete();
         });
     }
 

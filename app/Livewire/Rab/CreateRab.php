@@ -81,9 +81,9 @@ class CreateRab extends Component
             DB::commit();
             $this->form->reset();
 
-            // TODO Tambahkan redirect ke project dashboard
+            $this->redirectRoute('project.show.dashboard', $this->job_detail->project->id, true, true);
 
-            $this->alert('success', 'Berhasil membuat RAB.');
+            $this->alert('success', 'RAB berhasil dibuat.');
         } catch (Exception $e) {
             DB::rollBack();
             Log::error("Exception\t: $e");

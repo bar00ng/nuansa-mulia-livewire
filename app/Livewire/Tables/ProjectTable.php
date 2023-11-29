@@ -166,7 +166,7 @@ final class ProjectTable extends PowerGridComponent
             Button::add('edit')->render(function (\App\Models\Project $project) {
                 return Blade::render(
                     <<<HTML
-                        <a href="{{ route('project.show', '$project->uuid') }}" class="btn btn-success" wire:navigate>
+                        <a href="{{ route('project.show.dashboard', '$project->id') }}" class="btn btn-success" wire:navigate>
                             <i class="bi bi-eye-fill"></i>
                         </a>
                     HTML

@@ -140,7 +140,7 @@ final class VendorTable extends PowerGridComponent
             Button::add('edit')->render(function (\App\Models\Vendor $vendor) {
                 return Blade::render(
                     <<<HTML
-                        <a href="{{ route('vendor.edit', '$vendor->uuid') }}" class="btn btn-warning" wire:navigate>Edit</a>
+                        <a href="{{ route('vendor.edit', '$vendor->id') }}" class="btn btn-warning" wire:navigate>Edit</a>
                     HTML
                     ,
                 );

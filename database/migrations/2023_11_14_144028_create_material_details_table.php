@@ -13,8 +13,6 @@ return new class extends Migration
     {
         Schema::create('material_details', function (Blueprint $table) {
             $table->id();
-            $table->uuid()
-                ->unique();
             $table->foreignId('rab_item_id')
                 ->constrained()
                 ->onDelete('cascade');

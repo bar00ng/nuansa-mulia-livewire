@@ -9,7 +9,7 @@ use Ramsey\Uuid\Uuid;
 
 class RabItem extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory;
 
     protected $attributes = [
         "subtotal_ongkos_kerja" => 0,
@@ -36,14 +36,5 @@ class RabItem extends Model
 
     public function productionCost() {
         return $this->hasOne(ProductionCost::class);
-    }
-    public function newUniqueId(): string
-    {
-        return (string) Uuid::uuid4();
-    }
-
-    public function uniqueIds(): array
-    {
-        return ['uuid'];
     }
 }

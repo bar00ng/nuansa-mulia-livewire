@@ -320,6 +320,7 @@
                                     </tr>
 
                                     {{-- Jasa Kontraktor section --}}
+                                    <!-- TODO: Converted value belum ter update secara otomatis -->
                                     <tr>
                                         <th class="text-start" colspan="2">
                                             Jasa Kontraktor

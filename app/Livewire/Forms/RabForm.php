@@ -67,12 +67,41 @@ class RabForm extends Form
         ];
     }
 
-    // TODO Buat validation message
     public function messages()
     {
         return [
-            'materials.*.*.required' => 'Kolom ini wajib diisi.',
-            'production_cost_total.required_with' => 'tes',
+            'materials.*.item.required' => 'Kolom item pada material wajib diisi.',
+            'materials.*.item.min' => 'Kolom item pada material minimal harus memiliki :min karakter.',
+            'materials.*.satuan.required' => 'Kolom satuan pada material wajib diisi.',
+            'materials.*.satuan.min' => 'Kolom satuan pada material minimal harus memiliki :min karakter.',
+            'materials.*.quantity.required' => 'Kolom quantity pada material wajib diisi.',
+            'materials.*.quantity.numeric' => 'Kolom quantity pada material harus berupa angka.',
+            'materials.*.harga_satuan.required' => 'Kolom harga satuan pada material wajib diisi.',
+            'materials.*.harga_satuan.numeric' => 'Kolom harga satuan pada material harus berupa angka.',
+            'materials.*.harga_satuan.min' => 'Kolom harga satuan pada material minimal harus lebih besar dari :min.',
+            'materials.*.total.required' => 'Kolom total pada material wajib diisi.',
+            'materials.*.total.numeric' => 'Kolom total pada material harus berupa angka.',
+            'materials.*.total.min' => 'Kolom total pada material minimal harus lebih besar dari :min.',
+            'production_cost_total.required_with' => 'Kolom total biaya produksi harus diisi ketika ada nilai pada kolom satuan, quantity, dan harga satuan biaya produksi.',
+            'subtotal_material.required' => 'Kolom subtotal material wajib diisi.',
+            'subtotal_material.numeric' => 'Kolom subtotal material harus berupa angka.',
+            'subtotal_material.min' => 'Kolom subtotal material minimal harus lebih besar dari :min.',
+            'subtotal_other_cost.numeric' => 'Kolom subtotal biaya lain-lain harus berupa angka.',
+            'subtotal_other_cost.min' => 'Kolom subtotal biaya lain-lain minimal harus lebih besar dari :min.',
+            'total_biaya.required' => 'Kolom total biaya wajib diisi.',
+            'total_biaya.numeric' => 'Kolom total biaya harus berupa angka.',
+            'total_biaya.min' => 'Kolom total biaya minimal harus lebih besar dari :min.',
+            'lain_lain_percent.numeric' => 'Kolom persentase lain-lain harus berupa angka.',
+            'lain_lain_percent.min' => 'Kolom persentase lain-lain minimal harus lebih besar dari :min.',
+            'lain_lain_converted.numeric' => 'Kolom nilai konversi lain-lain harus berupa angka.',
+            'lain_lain_converted.min' => 'Kolom nilai konversi lain-lain minimal harus lebih besar dari :min.',
+            'jasa_kontraktor_percent.numeric' => 'Kolom persentase jasa kontraktor harus berupa angka.',
+            'jasa_kontraktor_percent.min' => 'Kolom persentase jasa kontraktor minimal harus lebih besar dari :min.',
+            'jasa_kontraktor_converted.numeric' => 'Kolom nilai konversi jasa kontraktor harus berupa angka.',
+            'jasa_kontraktor_converted.min' => 'Kolom nilai konversi jasa kontraktor minimal harus lebih besar dari :min.',
+            'grand_total.required' => 'Kolom grand total wajib diisi.',
+            'grand_total.numeric' => 'Kolom grand total harus berupa angka.',
+            'grand_total.min' => 'Kolom grand total minimal harus lebih besar dari :min.',
         ];
     }
 

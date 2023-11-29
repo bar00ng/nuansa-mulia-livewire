@@ -13,8 +13,6 @@ return new class extends Migration
     {
         Schema::create('production_costs', function (Blueprint $table) {
             $table->id();
-            $table->uuid()
-                ->unique();
             $table->foreignId('rab_item_id')
                 ->constrained()
                 ->onDelete('cascade');
