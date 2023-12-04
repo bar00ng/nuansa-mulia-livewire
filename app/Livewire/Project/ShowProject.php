@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Log;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use \App\Models\Todo;
+
 
 class ShowProject extends Component
 {
@@ -128,6 +130,8 @@ class ShowProject extends Component
         }
     }
 
+    
+
     public function render()
     {
         $job_details = $this->project->job_details;
@@ -144,12 +148,17 @@ class ShowProject extends Component
             }
         }
 
+        $todos = Todo::select('id', 'title', 'status', 'project_id')->get();
+
         return view('livewire.project.show-project', [
             'job_details' => $job_details,
             'vendor_attached' => $vendor_attached,
-            'isRabFilled' => $isRabFilled
+            'isRabFilled' => $isRabFilled,
+            'todos' => $todos
         ])->title($this->project->nama_project);
     }
+
+    
 
     public function alocateVendor() {
         $this->vendorAlocationForm->validate();

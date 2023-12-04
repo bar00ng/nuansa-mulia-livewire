@@ -25,6 +25,7 @@ Route::prefix('project')
     ->group(function () {
         Route::get('/', \App\Livewire\Project\ListProject::class)->name('index');
         Route::get('/create', \App\Livewire\Project\CreateProject::class)->name('create');
+        
         Route::prefix('/{project}')
             ->name('show.')
             ->group(function () {
@@ -35,9 +36,11 @@ Route::prefix('project')
                         Route::get('/', \App\Livewire\Project\Cashflows\ListCashflow::class)->name('index');
                         Route::get('/create', \App\Livewire\Project\Cashflows\CreateCashflow::class)->name('create');
                         Route::get('/update', \App\Livewire\Project\Cashflows\UpdateCashflow::class)->name('update');
+                        
                     });
             });
         Route::get('/create-rab/job-detail/{job_detail}/vendor/{vendor}/{readonly?}', \App\Livewire\Rab\CreateRab::class)->name('rab');
+        Route::get('/edit-todo/{project}', \App\Livewire\Project\EditTodo::class)->name('todo');
     });
 
 Route::get('/report-rab/{project}/vendor/{vendor}', [\App\Http\Controllers\ExportController::class, 'RabExport'])->name('report');

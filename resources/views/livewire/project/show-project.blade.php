@@ -5,7 +5,7 @@
         <div class="col">
             <div class="card shadow-lg">
                 <div class="card-body">
-                    <x-tab :projectId="$project->id"/>
+                    <x-tab :projectId="$project->id" />
                 </div>
             </div>
         </div>
@@ -71,6 +71,138 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="row">
+
+        <style>
+            .card {
+                height: 300px;
+            }
+
+            .list-group-item {
+                overflow-y: auto;
+                max-height: 200px;
+            }
+
+            .list-group-item-divider {
+                border-bottom: 1px solid #dee2e6;
+                padding-bottom: 5px;
+                margin-bottom: 5px;
+            }
+
+            .card-footer {
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+            }
+        </style>
+
+        <div class="col-md-4">
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                    Todo
+                </div>
+                <ul class="list-group list-group-flush">
+                    @foreach ($todos as $todo)
+                        @if ($todo->status === 'todo')
+                            <li class="list-group-item">
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>{{ $todo->title }}</span>
+                                    <div>
+                                        <a href="{{ route('project.todo', $todo->project_id) }}"
+                                            class="btn btn-primary btn-sm mr-2">
+                                            Edit
+                                        </a>
+                                        <button class="btn btn-danger btn-sm">
+                                            &times;
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="list-group-item-divider"></div>
+                            </li>
+                        @endif
+                    @endforeach
+                </ul>
+                <div class="card-footer card-footer-bottom">
+                    <button class="btn btn-primary btn-sm ">
+                        <i class="fa fa-plus"></i> Tambah
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-white">
+                    Progress
+                </div>
+                <ul class="list-group list-group-flush">
+                    @foreach ($todos as $todo)
+                        @if ($todo->status === 'progress')
+                            <li class="list-group-item">
+                                <div class="list-group-item-divider"></div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>{{ $todo->title }}</span>
+                                    <div>
+                                        <a href="{{ route('project.todo', $todo->project_id) }}"
+                                            class="btn btn-warning btn-sm mr-2">
+                                            Edit
+                                        </a>
+                                        <button class="btn btn-danger btn-sm">
+                                            &times;
+                                        </button>
+                                    </div>
+                                </div>
+                            </li>
+                        @endif
+                    @endforeach
+                </ul>
+                <div class="card-footer card-footer-bottom">
+                    <button class="btn btn-warning btn-sm add-button">
+                        <i class="fa fa-plus"></i> Tambah
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-success">
+                <div class="card-header bg-success text-white">
+                    Completed
+                </div>
+                <ul class="list-group list-group-flush">
+                    @foreach ($todos as $todo)
+                        @if ($todo->status === 'progress')
+                            <li class="list-group-item">
+                                <div class="list-group-item-divider"></div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>{{ $todo->title }}</span>
+                                    <div>
+                                        <a href="{{ route('project.todo', $todo->project_id) }}"
+                                            class="btn btn-success btn-sm mr-2">
+                                            Edit
+                                        </a>
+                                        <button class="btn btn-danger btn-sm">
+                                            &times;
+                                        </button>
+                                    </div>
+                                </div>
+                            </li>
+                        @endif
+                    @endforeach
+                </ul>
+                <div class="card-footer card-footer-bottom">
+                    <button class="btn btn-success btn-sm add-button">
+                        <i class="fa fa-plus"></i> Tambah
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+
     </div>
 
     {{-- Job Detail Table --}}
